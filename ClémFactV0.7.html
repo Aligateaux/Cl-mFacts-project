@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clémence Facts - La Légende du Tennis & de la Couture</title>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-auth.js"></script>
+    <style>
+        :root {
+            --primary-color: #88c425;
+            --secondary-color: #ff69b4;
+            --background-color: #f4f9f4;
+            --thread-color: #ff69b4;
+        }
+
+        @keyframes stitching {
+            0% { background-position: 0 0; }
+            100% { background-position: 20px 0; }
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive;
+            background-color: var(--background-color);
+            background-image: linear-gradient(45deg, transparent 45%, var(--thread-color) 45%, var(--thread-color) 55%, transparent 55%);
+            background-size: 20px 20px;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 2px dashed var(--thread-color);
+            border-radius: 12px;
+            pointer-events: none;
+        }
+
+        .needle-decoration {
+            position: absolute;
+            width: 30px;
+            height: 3px;
+            background: silver;
+            transform: rotate(45deg);
+        }
+
+        .needle-decoration::after {
+            content: '○';
+            position: absolute;
+            right: -5px;
+            top: -8px;
+            color: silver;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5em;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .title-decoration {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tennis-ball {
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle at 30% 30%, #c3d42d, #a8b827);
+            border-radius: 50%;
+            position: relative;
+            display: inline-block;
+            box-shadow: inset -3px -3px 8px rgba(0,0,0,0.2);
+        }
+
+        .tennis-ball::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: rgba(255,255,255,0.7);
+            top: 50%;
+            left: 0;
+            transform: rotate(45deg);
+        }
+
+        .fact-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 20px 0;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border: 2px solid var(--thread-color);
+        }
+
+        .fact-container::before,
+        .fact-container::after {
+            content: '✂️';
+            position: absolute;
+            font-size: 1.5em;
+            transform: rotate(-45deg);
+        }
+
+        .fact-container::before {
+            top: -15px;
+            left: 20px;
+        }
+
+        .fact-container::after {
+            bottom: -15px;
+            right: 20px;
+        }
+
+        .stitch {
+            position: absolute;
+            background: repeating-linear-gradient(90deg, var(--thread-color), var(--thread-color) 5px, transparent 5px, transparent 10px);
+            height: 2px;
+            animation: stitching 1s linear infinite;
+        }
+
+        .stitch-top { top: 5px; left: 40px; right: 40px; }
+        .stitch-bottom { bottom: 5px; left: 40px; right: 40px; }
+
+        .button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,0.1) 5px, rgba(255,255,255,0.1) 10px);
+            pointer-events: none;
+        }
+
+        .button:hover {
+            transform: scale(1.05);
+        }
+
+        /* Styles existants... */
+
+        #submitForm {
+            border: 2px dashed var(--thread-color);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            position: relative;
+        }
+
+        #submitForm::before {
+            content: '🧵';
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: white;
+            padding: 0 10px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid var(--thread-color);
+            border-radius: 5px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .like-button {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin: 10px auto;
+        }
+
+        .like-button::before {
+            content: '🎾';
+        }
+
+        .like-button::after {
+            content: '🧵';
+        }
+
+        .like-button:hover {
+            transform: scale(1.2);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="needle-decoration" style="top: 10px; left: 10px;"></div>
+        <div class="needle-decoration" style="top: 10px; right: 10px; transform: rotate(-45deg);"></div>
+        
+        <h1>
+            <span class="title-decoration">
+                <span class="tennis-ball"></span>
+                Clémence Facts
+                <span>🧵</span>
+            </span>
+            <br>
+            <small style="font-size: 0.6em">La Légende du Tennis & de la Couture</small>
+        </h1>
+        
+        <div class="fact-container">
+            <div class="stitch stitch-top"></div>
+            <div class="stitch stitch-bottom"></div>
+            <p id="currentFact" class="fact-text">Chargement d'un fact légendaire...</p>
+        </div>
+
+        <button class="like-button" onclick="likeFact()"></button>
+        <button class="button" onclick="getRandomFact()">Nouvelle Anecdote</button>
+
+        <div id="submitForm">
+            <h2>Proposer une nouvelle anecdote</h2>
+            <textarea id="newFact" rows="4" placeholder="Racontez votre anecdote sur Clémence..."></textarea>
+            <button class="button" onclick="submitFact()">Broder cette histoire</button>
+        </div>
+
+        <div id="adminPanel" class="admin-panel" style="display: none;">
+            <h2>Panel Administrateur</h2>
+            <div id="pendingFacts"></div>
+        </div>
+    </div>
+
+    <audio id="smashSound" src="/api/placeholder/audio"></audio>
+
+    <!-- Configuration Firebase -->
+    <script>
+        // Remplacez par votre propre configuration Firebase
+        const firebaseConfig = {
+            apiKey: "votre-api-key",
+            authDomain: "votre-projet.firebaseapp.com",
+            databaseURL: "https://votre-projet.firebaseio.com",
+            projectId: "votre-projet",
+            storageBucket: "votre-projet.appspot.com",
+            messagingSenderId: "votre-messaging-id",
+            appId: "votre-app-id"
+        };
+
+        // Initialiser Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+    </script>
+
+    <!-- Script JavaScript inchangé... -->
+
+       <!-- Ajout du footer pour le message personnalisé -->
+       <footer style="margin-top: 50px; text-align: center; font-size: 0.8em; color: #888;">
+        <p>By Ali with love !</p>
+    </footer>
+</body>
+</html>
